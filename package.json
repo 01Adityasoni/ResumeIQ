@@ -1,0 +1,31 @@
+{
+  "name": "resumeiq",
+  "version": "1.0.0",
+  "description": "Fullstack + gen AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/01Adityasoni/ResumeIQ.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/01Adityasoni/ResumeIQ/issues"
+  },
+  "homepage": "https://github.com/01Adityasoni/ResumeIQ#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.2",
+    "nodemon": "^3.1.14"
+  }
+}
