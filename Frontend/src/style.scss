@@ -1,3 +1,7 @@
+@use "./style//button.scss";
+
+
+
 * {
     margin: 0;
     padding: 0;
@@ -8,4 +12,6 @@ html, body
 #root{
     width: 100%;
     background-color: #161616;
+    color: whitesmoke;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }

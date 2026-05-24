@@ -1,0 +1,41 @@
+main{
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
+
+
+    .input-group{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+
+        label{
+            font-size: 0.9rem;
+            color: #fff9f9;
+        }
+
+        input{
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+
+            &:focus{
+                outline: none;
+                border-color: #007BFF;
+            }
+        }
+    }
+
+
+
+
+
+
+}

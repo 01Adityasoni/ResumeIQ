@@ -1,0 +1,37 @@
+ .button{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    padding-inline: 1.5rem;
+    padding-block:0.75rem;
+    border-radius: 1rem;
+    cursor: pointer;
+
+
+
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+    &:hover{
+        transform: translateY(-2px);
+    }
+
+    &:active{
+        transform: scale(0.96);
+    }
+
+
+
+    &.primary-button{
+        background-color: #e1034d;
+        color: white;
+    }
+
+    &.primary-button:hover{
+        background-color: #c80242;
+        box-shadow: 0 10px 24px rgba(225, 3, 77, 0.28);
+    }
+
+
+    }
