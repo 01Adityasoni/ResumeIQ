@@ -53,17 +53,22 @@ Resume: ${resume}
 Self-Description: ${selfDescription}
 Job Description: ${jobDescription}`;
 
+/**
+ * AI model implementation to generate interview report based on the provided prompt and schema.
+ * from this we able to change the model and the response structure 
+ */
+
+
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseJsonSchema: zodToJsonSchema(interviewReportSchema),
+            responseSchema: zodToJsonSchema(interviewReportSchema),
         },
     });
 
-    console.log(JSON.parse(response.text));
-
+    return JSON.parse(response.text);
 }
 
 
