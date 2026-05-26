@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // ── Shared Variables (mirrors home.scss theme) ────────────────────────────────
 $bg-page: #0d1117;
 $bg-card: #161b22;
@@ -29,6 +31,88 @@ $severity-low: #3fb950;
     align-items: stretch;
     padding: 1.5rem;
     box-sizing: border-box;
+    position: relative;
+}
+
+.loading-screen {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #0f1724 0%, #091023 100%);
+
+    h1 {
+        margin: 0;
+        color: $text-primary;
+        font-size: clamp(1.4rem, 2.4vw, 2rem);
+    }
+}
+
+.download-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: grid;
+    place-items: center;
+    background: rgba(2, 6, 23, 0.74);
+    backdrop-filter: blur(5px);
+    padding: 1rem;
+
+    &__card {
+        width: min(430px, 100%);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: linear-gradient(145deg, rgba(255, 45, 120, 0.17), rgba(56, 189, 248, 0.12));
+        box-shadow: 0 20px 44px rgba(2, 6, 23, 0.55);
+        text-align: center;
+        padding: 1.1rem;
+    }
+
+    h3 {
+        margin: 0.8rem 0 0.3rem;
+        font-size: 1.18rem;
+    }
+
+    p {
+        margin: 0;
+        color: color.adjust($text-muted, $lightness: 22%);
+    }
+}
+
+.download-orbit {
+    width: 82px;
+    height: 82px;
+    margin: 0 auto;
+    position: relative;
+
+    &__ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+
+        &.outer {
+            inset: 0;
+            animation: spinOrbit 2.2s linear infinite;
+        }
+
+        &.inner {
+            inset: 13px;
+            border-color: rgba(103, 232, 249, 0.9);
+            animation: spinOrbitReverse 1.6s linear infinite;
+        }
+    }
+
+    &__core {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: #f8fafc;
+        box-shadow: 0 0 18px rgba(186, 230, 253, 0.85);
+        animation: pulseCore 1.2s ease-in-out infinite;
+    }
 }
 
 // ── 3-Column Layout ───────────────────────────────────────────────────────────
@@ -110,6 +194,27 @@ $severity-low: #3fb950;
     }
 }
 
+.role-brief {
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.7rem;
+    background: rgba(255, 255, 255, 0.03);
+
+    &__role {
+        margin: 0;
+        color: #f8fafc;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    &__meta {
+        margin: 0.2rem 0 0;
+        color: color.adjust($text-muted, $lightness: 12%);
+        font-size: 0.78rem;
+    }
+}
+
 // ── Center Content ────────────────────────────────────────────────────────────
 .interview-content {
     flex: 1;
@@ -130,6 +235,84 @@ $severity-low: #3fb950;
     section {
         min-height: 100%;
     }
+}
+
+.report-overview {
+    margin-bottom: 1.3rem;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 0.95rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+
+    &__head {
+        margin-bottom: 0.8rem;
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.18rem, 2.2vw, 1.55rem);
+            color: $text-primary;
+        }
+
+        p {
+            margin: 0.35rem 0 0;
+            color: color.adjust($text-muted, $lightness: 14%);
+            line-height: 1.55;
+        }
+    }
+
+    &__meta {
+        margin-top: 0.7rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+
+        span {
+            border: 1px solid $border-color;
+            background: rgba(255, 255, 255, 0.04);
+            color: color.adjust($text-muted, $lightness: 18%);
+            font-size: 0.74rem;
+            border-radius: 999px;
+            padding: 0.2rem 0.52rem;
+        }
+    }
+
+    &__cards {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.6rem;
+
+        article {
+            border: 1px solid $border-color;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 0.65rem 0.72rem;
+            transition: transform 0.16s, border-color 0.16s, background-color 0.16s;
+
+            &:hover {
+                transform: translateY(-2px);
+                border-color: color.adjust($border-color, $lightness: 14%);
+                background: rgba(255,255,255,0.05);
+            }
+
+            span {
+                display: block;
+                font-size: 0.78rem;
+                color: color.adjust($text-muted, $lightness: 10%);
+            }
+
+            strong {
+                margin-top: 0.2rem;
+                display: block;
+                font-size: 1.05rem;
+            }
+        }
+    }
+}
+
+.download-notice {
+    margin: 0.8rem 0 0;
+    font-size: 0.86rem;
+    color: #7dd3fc;
 }
 
 .content-header {
@@ -172,7 +355,7 @@ $severity-low: #3fb950;
     transition: border-color 0.2s;
 
     &:hover {
-        border-color: lighten($border-color, 8%);
+        border-color: color.adjust($border-color, $lightness: 8%);
     }
 
     &__header {
@@ -234,7 +417,7 @@ $severity-low: #3fb950;
         p {
             margin: 0;
             font-size: 0.835rem;
-            color: lighten($text-muted, 15%);
+            color: color.adjust($text-muted, $lightness: 15%);
             line-height: 1.6;
         }
     }
@@ -304,7 +487,8 @@ $severity-low: #3fb950;
 
     &__header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
         gap: 0.6rem;
     }
 
@@ -323,6 +507,24 @@ $severity-low: #3fb950;
         font-size: 0.95rem;
         font-weight: 600;
         color: $text-primary;
+        flex: 1;
+        min-width: 240px;
+    }
+
+    &__toggle {
+        border: 1px solid $border-color;
+        background: rgba(255, 255, 255, 0.03);
+        color: #bae6fd;
+        font-size: 0.75rem;
+        border-radius: 999px;
+        padding: 0.15rem 0.55rem;
+        cursor: pointer;
+        transition: background-color 0.15s, border-color 0.15s;
+
+        &:hover {
+            background: rgba(56, 189, 248, 0.08);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
     }
 
     &__tasks {
@@ -338,7 +540,7 @@ $severity-low: #3fb950;
             align-items: flex-start;
             gap: 0.5rem;
             font-size: 0.845rem;
-            color: lighten($text-muted, 12%);
+            color: color.adjust($text-muted, $lightness: 12%);
             line-height: 1.5;
         }
     }
@@ -451,6 +653,50 @@ $severity-low: #3fb950;
     }
 }
 
+.gap-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+
+    span {
+        font-size: 0.72rem;
+        border-radius: 999px;
+        border: 1px solid $border-color;
+        padding: 0.15rem 0.5rem;
+        color: color.adjust($text-muted, $lightness: 14%);
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+.job-snapshot {
+    &__label {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: $text-muted;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.42rem;
+    }
+
+    li {
+        color: color.adjust($text-muted, $lightness: 14%);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    strong {
+        color: #e2e8f0;
+    }
+}
+
 .skill-tag {
     font-size: 0.775rem;
     font-weight: 500;
@@ -475,5 +721,83 @@ $severity-low: #3fb950;
         color: $severity-low;
         background-color: rgba($severity-low, 0.1);
         border-color: rgba($severity-low, 0.25);
+    }
+}
+
+.download-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.download-btn.is-downloading {
+    opacity: 0.85;
+    cursor: wait;
+}
+
+@keyframes spinOrbit {
+    from { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.05); }
+    to { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes spinOrbitReverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+@keyframes pulseCore {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.28); }
+}
+
+@media (max-width: 1120px) {
+    .interview-layout {
+        flex-direction: column;
+    }
+
+    .interview-divider {
+        width: 100%;
+        height: 1px;
+    }
+
+    .interview-nav,
+    .interview-sidebar {
+        width: 100%;
+    }
+
+    .interview-content {
+        max-height: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .interview-page {
+        padding: 0.75rem;
+    }
+
+    .interview-content {
+        padding: 1rem;
+    }
+
+    .report-overview__cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .report-overview__meta {
+        gap: 0.35rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .report-overview__cards {
+        grid-template-columns: 1fr;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
     }
 }

@@ -13,6 +13,7 @@ function Home() {
     const [selfDesc, setSelfDesc] = useState('')
     const [resumeName, setResumeName] = useState('')
     const [errorText, setErrorText] = useState('')
+    const [loadingStep, setLoadingStep] = useState(0)
     const resumeInputRef = useRef(null)
 
     const navigate = useNavigate()
@@ -20,9 +21,34 @@ function Home() {
     useEffect(() => {
         getAllReports()
     }, [])
+
+    const loadingMessages = [
+        'Reading your resume context...',
+        'Matching your profile with the role...',
+        'Designing personalized interview questions...',
+        'Scoring confidence and technical fit...'
+    ]
+
+    useEffect(() => {
+        if (!loading) {
+            setLoadingStep(0)
+            return
+        }
+
+        const intervalId = setInterval(() => {
+            setLoadingStep((prev) => (prev + 1) % loadingMessages.length)
+        }, 1400)
+
+        return () => clearInterval(intervalId)
+    }, [loading, loadingMessages.length])
  
  
     const words = (text = '') => text.trim() ? text.trim().split(/\s+/).length : 0
+    const jobWords = words(jobDesc)
+    const selfWords = words(selfDesc)
+    const hasResume = Boolean(resumeName)
+    const completionSteps = [jobWords > 0, selfWords > 0, hasResume]
+    const completionPercent = Math.round((completionSteps.filter(Boolean).length / completionSteps.length) * 100)
 
     const openFile = () => {
         resumeInputRef.current?.click()
@@ -80,7 +106,67 @@ function Home() {
 
     return (
         <main className="home">
+            {loading && (
+                <div className="generation-overlay" role="status" aria-live="polite" aria-busy="true">
+                    <div className="generation-overlay__card">
+                        <div className="generation-loader" aria-hidden="true">
+                            <span className="ring ring-1" />
+                            <span className="ring ring-2" />
+                            <span className="core" />
+                        </div>
+                        <h3>Generating Your AI Interview</h3>
+                        <p className="generation-message">{loadingMessages[loadingStep]}</p>
+                        <div className="loading-dots" aria-hidden="true">
+                            <span />
+                            <span />
+                            <span />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <section className="card">
+                <div className="home-hero">
+                    <div>
+                        <p className="hero-kicker">Interview Prep Studio</p>
+                        <h1 className="hero-title">Create smarter mock interviews with your real profile</h1>
+                        <p className="hero-subtitle">
+                            Add the job description, your personal summary, and your resume PDF to generate a tailored interview set.
+                        </p>
+                    </div>
+                    <div className="hero-status">
+                        <p className="hero-status__label">Session readiness</p>
+                        <p className="hero-status__value">{completionPercent}%</p>
+                        <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completionPercent}>
+                            <span style={{ width: `${completionPercent}%` }} />
+                        </div>
+                        <div className="status-grid">
+                            <span className={jobWords > 0 ? 'status-pill done' : 'status-pill'}>JD</span>
+                            <span className={selfWords > 0 ? 'status-pill done' : 'status-pill'}>Self Intro</span>
+                            <span className={hasResume ? 'status-pill done' : 'status-pill'}>Resume</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="insights-strip">
+                    <article className="insight-card">
+                        <p>Job Description</p>
+                        <strong>{jobWords} words</strong>
+                    </article>
+                    <article className="insight-card">
+                        <p>Self Description</p>
+                        <strong>{selfWords} words</strong>
+                    </article>
+                    <article className="insight-card">
+                        <p>Resume</p>
+                        <strong>{hasResume ? 'Uploaded' : 'Missing'}</strong>
+                    </article>
+                    <article className="insight-card">
+                        <p>Past Interviews</p>
+                        <strong>{reports.length}</strong>
+                    </article>
+                </div>
+
                 <h2 className="title">Interview Helper</h2>
                 <div className="interview-input-group">
                     <div className="left">
@@ -139,7 +225,7 @@ function Home() {
                             <button className="btn" onClick={handleGenerate} disabled={loading}>
                                 {loading ? <span className="spinner" /> : 'Generate Interview'}
                             </button>
-                            <button className="btn ghost" onClick={clearAll}>
+                            <button className="btn ghost" onClick={clearAll} disabled={loading}>
                                 Clear
                             </button>
                         </div>
@@ -183,6 +269,7 @@ function Home() {
                                         <span>Match score: {typeof report.matchScore === 'number' ? `${report.matchScore}%` : 'N/A'}</span>
                                         <span>{report.technicalQuestions?.length || 0} technical questions</span>
                                     </div>
+                                    <div className="previous-reports__cta">Open interview report</div>
                                 </li>
                             ))}
                         </ul>
