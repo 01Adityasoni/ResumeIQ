@@ -3,6 +3,7 @@ import {
     generateInterviewReport,
     getAllInterviewReports,
     getInterviewReportById,
+        generateResumePdf
 } from '../services/interview.api'
 import { InterviewContext } from '../interview.context.jsx'
 
@@ -66,9 +67,25 @@ export const useInterview = () => {
         }
     }
 
-    const getResumePdf = async () => {
-        // Backend does not expose a resume file download endpoint yet.
-        return null
+    const getResumePdf = async (interviewId) => {
+        setLoading(true)
+        let response = null
+        try {
+            response = await generateResumePdf({ interviewId })
+        const url = window.URL.createObjectURL(new Blob([response], { type: 'application/pdf' }))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `resume_${interviewId}.pdf`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error generating resume PDF:', error)
+            const message = error?.response?.data?.message || error?.message || 'Failed to generate resume PDF'
+            throw new Error(message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return {
