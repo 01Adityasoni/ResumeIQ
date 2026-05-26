@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInteview.js'
 import { useParams } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -28,14 +29,25 @@ const parseMaybeJson = (value) => {
     }
 }
 
+const stripMarkupTags = (value) => {
+    if (typeof value !== 'string') {
+        return value
+    }
+
+    return value
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+}
+
 const formatText = (value) => {
     const parsed = parseMaybeJson(value)
 
     if (parsed && typeof parsed === 'object') {
-        return parsed.question || parsed.skill || parsed.focus || parsed.title || parsed.answer || value
+        return stripMarkupTags(parsed.question || parsed.skill || parsed.focus || parsed.title || parsed.answer || value)
     }
 
-    return String(parsed || '').trim()
+    return stripMarkupTags(String(parsed || ''))
 }
 
 const getQuestionDisplayData = (item) => {
@@ -168,6 +180,7 @@ const Interview = () => {
     const [ downloadNotice, setDownloadNotice ] = useState('')
     const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+    const navigate = useNavigate()
 
     const downloadMessages = [
         'Collecting report insights...',
@@ -228,9 +241,17 @@ const Interview = () => {
     const technicalCount = report.technicalQuestions?.length || 0
     const behavioralCount = report.behavioralQuestions?.length || 0
     const roadmapDays = report.preparationPlan?.length || 0
-    const highSeverityGaps = (report.skillGaps || []).filter((gap) => String(getSkillGapDisplay(gap).severity || '').toLowerCase() === 'high').length
-    const mediumSeverityGaps = (report.skillGaps || []).filter((gap) => String(getSkillGapDisplay(gap).severity || '').toLowerCase() === 'medium').length
-    const lowSeverityGaps = (report.skillGaps || []).filter((gap) => String(getSkillGapDisplay(gap).severity || '').toLowerCase() === 'low').length
+    const normalizedSkillGaps = (report.skillGaps || []).map((gap) => {
+        const display = getSkillGapDisplay(gap)
+
+        return {
+            skill: formatText(display.skill),
+            severity: String(display.severity || 'medium').toLowerCase(),
+        }
+    })
+    const highSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'high').length
+    const mediumSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'medium').length
+    const lowSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'low').length
     const jobMeta = getJobMeta(report.jobDescription)
 
     const handleResumeDownload = async () => {
@@ -416,21 +437,33 @@ const Interview = () => {
                     <div className='skill-gaps'>
                         <p className='skill-gaps__label'>Skill Gaps</p>
                         <div className='gap-summary'>
+                            <span>Total: {normalizedSkillGaps.length}</span>
                             <span>High: {highSeverityGaps}</span>
                             <span>Medium: {mediumSeverityGaps}</span>
                             <span>Low: {lowSeverityGaps}</span>
                         </div>
                         <div className='skill-gaps__list'>
-                            {report.skillGaps?.map((gap, i) => (
-                                <span key={i} className={`skill-tag skill-tag--${String(getSkillGapDisplay(gap).severity || '').toLowerCase()}`}>
-                                    {formatText(getSkillGapDisplay(gap).skill)}
-                                </span>
+                            {normalizedSkillGaps.map((gap, i) => (
+                                <article key={`${gap.severity}-${i}`} className='skill-gap-item'>
+                                    <span className={`skill-gap-item__severity skill-gap-item__severity--${gap.severity}`}>
+                                        {gap.severity}
+                                    </span>
+                                    <span className='skill-gap-item__skill'>{gap.skill}</span>
+                                </article>
                             ))}
                         </div>
                     </div>
 
                 </aside>
             </div>
+            <button
+                type='button'
+                className='back-home-floating'
+                onClick={() => navigate('/')}
+                aria-label='Back to home'
+            >
+                Back to Home
+            </button>
         </div>
     )
 }

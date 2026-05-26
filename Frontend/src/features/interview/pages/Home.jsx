@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import '../style/home.scss'
 import {useInterview} from '../hooks/useInteview'
 import {useNavigate} from 'react-router-dom'
+import { AuthContext } from '../../auth/auth.context'
+import { logout as logoutUser } from '../../auth/services/auth.api'
 
 
 
@@ -9,11 +11,13 @@ function Home() {
 
 
     const {loading, generateReport , reports, getAllReports } = useInterview()
+    const { user, setUser } = useContext(AuthContext)
     const [jobDesc, setJobDesc] = useState('')
     const [selfDesc, setSelfDesc] = useState('')
     const [resumeName, setResumeName] = useState('')
     const [errorText, setErrorText] = useState('')
     const [loadingStep, setLoadingStep] = useState(0)
+    const [logoutLoading, setLogoutLoading] = useState(false)
     const resumeInputRef = useRef(null)
 
     const navigate = useNavigate()
@@ -69,6 +73,20 @@ function Home() {
         setErrorText('')
         if (resumeInputRef.current) {
             resumeInputRef.current.value = ''
+        }
+    }
+
+    const handleLogout = async () => {
+        setLogoutLoading(true)
+
+        try {
+            await logoutUser()
+            setUser(null)
+            navigate('/login')
+        } catch (error) {
+            setErrorText(error.message || 'Unable to log out right now. Please try again.')
+        } finally {
+            setLogoutLoading(false)
         }
     }
 
@@ -275,6 +293,25 @@ function Home() {
                         </ul>
                     </div>
                 )}
+
+                <aside className="profile-card" aria-label="User profile">
+                    <div className="profile-card__avatar" aria-hidden="true">
+                        {user?.username?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <div className="profile-card__content">
+                        <p className="profile-card__label">Signed in as</p>
+                        <strong className="profile-card__name">{user?.username || 'User'}</strong>
+                        <span className="profile-card__email">{user?.email || 'No email available'}</span>
+                    </div>
+                    <button
+                        type="button"
+                        className="profile-card__logout"
+                        onClick={handleLogout}
+                        disabled={logoutLoading}
+                    >
+                        {logoutLoading ? 'Logging out...' : 'Logout'}
+                    </button>
+                </aside>
 
 
 

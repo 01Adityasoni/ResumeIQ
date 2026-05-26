@@ -315,7 +315,7 @@ Do not return arrays of strings.`;
 
 
     const response = await ai.models.generateContent({
-        model: process.env.GOOGLE_GENAI_MODEL || "gemini-2.5-flash",
+        model: process.env.GOOGLE_GENAI_MODEL || "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",

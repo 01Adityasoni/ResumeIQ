@@ -40,7 +40,7 @@ export async function login({email , password}) {
 
 export async function logout() {
     try{
-        const response = await api.post('/logout');
+        const response = await api.get('/logout');
         return response.data;
     } catch (error) {
         console.error('Error logging out user:', error);

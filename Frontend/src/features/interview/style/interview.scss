@@ -647,9 +647,55 @@ $severity-low: #3fb950;
     }
 
     &__list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        display: grid;
+        gap: 0.55rem;
+    }
+}
+
+.skill-gap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $border-color;
+    border-radius: 0.7rem;
+    background: rgba(255, 255, 255, 0.03);
+
+    &__severity {
+        flex-shrink: 0;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.16rem 0.5rem;
+        border-radius: 999px;
+        border: 1px solid $border-color;
+        color: color.adjust($text-muted, $lightness: 18%);
+        background: rgba(255, 255, 255, 0.03);
+
+        &--high {
+            color: color.adjust($severity-high, $lightness: 5%);
+            border-color: rgba($severity-high, 0.3);
+            background: rgba($severity-high, 0.08);
+        }
+
+        &--medium {
+            color: color.adjust($severity-medium, $lightness: 8%);
+            border-color: rgba($severity-medium, 0.28);
+            background: rgba($severity-medium, 0.08);
+        }
+
+        &--low {
+            color: color.adjust($severity-low, $lightness: 8%);
+            border-color: rgba($severity-low, 0.28);
+            background: rgba($severity-low, 0.08);
+        }
+    }
+
+    &__skill {
+        color: $text-primary;
+        font-size: 0.86rem;
+        line-height: 1.45;
     }
 }
 
@@ -799,5 +845,33 @@ $severity-low: #3fb950;
         flex-direction: column;
         align-items: flex-start;
         gap: 0.4rem;
+    }
+}
+
+.back-home-floating {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4);
+    color: #061024;
+    padding: 0.55rem 0.9rem;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 10px 28px rgba(2,6,23,0.5);
+    cursor: pointer;
+    transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.back-home-floating:hover {
+    transform: translateY(-3px);
+}
+
+@media (max-width: 760px) {
+    .back-home-floating {
+        left: 0.75rem;
+        bottom: 0.75rem;
+        padding: 0.5rem 0.8rem;
     }
 }
