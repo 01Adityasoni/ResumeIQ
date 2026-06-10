@@ -51,11 +51,6 @@ const skillGapSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Skill is required']
     },
-    severity: {
-        type: String,
-        enum: ['low', 'medium', 'high'],
-        lowercase: true,
-    }
 },{_id: false})
 
 

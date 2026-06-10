@@ -21,7 +21,6 @@ const finalInterviewReportSchema = z.object({
     })).min(1),
     skillGaps: z.array(z.object({
         skill: z.string(),
-        severity: z.enum(["low", "medium", "high"]),
     })).min(1),
     preparationPlan: z.array(z.object({
         day: z.number().int().positive(),
@@ -158,27 +157,18 @@ function normalizeSkillGap(item) {
         const parsed = parseMaybeJson(item);
 
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-            const severityRaw = String(parsed.severity || 'medium').toLowerCase();
-            const severity = ['low', 'medium', 'high'].includes(severityRaw) ? severityRaw : 'medium';
-
             return {
                 skill: String(parsed.skill || '').trim(),
-                severity,
             };
         }
 
         return {
             skill: String(parsed).trim(),
-            severity: 'medium',
         };
     }
 
-    const severityRaw = String(item?.severity || 'medium').toLowerCase();
-    const severity = ['low', 'medium', 'high'].includes(severityRaw) ? severityRaw : 'medium';
-
     return {
         skill: String(item?.skill || '').trim(),
-        severity,
     };
 }
 
@@ -273,8 +263,7 @@ const interviewReportSchema = z.object({
 
     skillGaps: z.array(z.object({
         skill: z.string().describe("The specific skill that the candidate may be lacking based on their resume and self-description."),
-        severity: z.enum(["low", "medium", "high"]).describe("The severity of the skill gap, indicating how critical it is for the candidate to address this gap before the interview."),
-    })).min(1).describe("A list of potential skill gaps that the candidate may have based on their resume and self-description, along with an assessment of the severity of each gap."),
+    })).min(1).describe("A list of potential skill gaps that the candidate may have based on their resume and self-description."),
 
     preparationPlan: z.array(z.object({
         day: z.number().int().positive().describe("The day number in the preparation plan, starting from day 1."),
@@ -303,7 +292,7 @@ Return valid JSON only.
 IMPORTANT OUTPUT FORMAT:
 - technicalQuestions: array of objects with keys: question, intention, answer
 - behavioralQuestions: array of objects with keys: question, intention, answer
-- skillGaps: array of objects with keys: skill, severity (low|medium|high)
+ - skillGaps: array of objects with key: skill
 - preparationPlan: array of objects with keys: day (number), focus, tasks (string[])
 - title: required string
 Do not return arrays of strings.`;
@@ -342,7 +331,6 @@ Do not return arrays of strings.`;
         })),
         skillGaps: parsed.skillGaps.map((gap) => ({
             skill: gap.skill.trim(),
-            severity: gap.severity,
         })),
         preparationPlan: parsed.preparationPlan.map((day) => ({
             day: day.day,

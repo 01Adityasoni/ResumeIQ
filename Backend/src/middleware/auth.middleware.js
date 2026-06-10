@@ -16,7 +16,12 @@ async function authUser(req,res,next){
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        const normalizedId = decoded.id || decoded._id;
+        req.user = {
+            ...decoded,
+            id: normalizedId,
+            _id: normalizedId,
+        };
         next();
     } catch (err) {
         return res.status(401).json({ message: "Invalid token" });

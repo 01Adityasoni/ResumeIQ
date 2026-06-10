@@ -131,4 +131,32 @@ async function generateResumePdfController(req, res) {
 
 }
 
-module.exports = { generateInterviewReportController , getInterviewReportByIdController, getAllInterviewReportsController, generateResumePdfController };
+
+/**
+ * @description controller to delete an interview report owned by the authenticated user
+ * @route DELETE /api/interview/:interviewId
+ * @access Private
+ */
+async function deleteInterviewReportController(req, res) {
+    try {
+        const { interviewId } = req.params;
+
+        const interviewReport = await interviewReportModel.findById(interviewId);
+
+        if (!interviewReport) {
+            return res.status(404).json({ message: 'Interview report not found' });
+        }
+
+        if (String(interviewReport.user) !== String(req.user._id)) {
+            return res.status(403).json({ message: 'Forbidden: you are not the owner of this report' });
+        }
+
+        await interviewReportModel.deleteOne({ _id: interviewId });
+
+        return res.status(200).json({ message: 'Interview report deleted successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to delete interview report', error: error.message });
+    }
+}
+
+module.exports = { generateInterviewReportController , getInterviewReportByIdController, getAllInterviewReportsController, generateResumePdfController, deleteInterviewReportController };

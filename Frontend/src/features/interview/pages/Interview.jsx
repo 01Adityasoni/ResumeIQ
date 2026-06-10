@@ -74,13 +74,11 @@ const getSkillGapDisplay = (gap) => {
     if (parsedSkill && typeof parsedSkill === 'object') {
         return {
             skill: parsedSkill.skill || gap.skill,
-            severity: parsedSkill.severity || gap.severity,
         }
     }
 
     return {
         skill: gap.skill,
-        severity: gap.severity,
     }
 }
 
@@ -178,7 +176,7 @@ const Interview = () => {
     const [ isDownloading, setIsDownloading ] = useState(false)
     const [ downloadStep, setDownloadStep ] = useState(0)
     const [ downloadNotice, setDownloadNotice ] = useState('')
-    const { report, getReportById, loading, getResumePdf } = useInterview()
+    const { report, getReportById, loading, getResumePdf, deleteReport } = useInterview()
     const { interviewId } = useParams()
     const navigate = useNavigate()
 
@@ -243,15 +241,11 @@ const Interview = () => {
     const roadmapDays = report.preparationPlan?.length || 0
     const normalizedSkillGaps = (report.skillGaps || []).map((gap) => {
         const display = getSkillGapDisplay(gap)
-
         return {
             skill: formatText(display.skill),
-            severity: String(display.severity || 'medium').toLowerCase(),
         }
     })
-    const highSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'high').length
-    const mediumSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'medium').length
-    const lowSeverityGaps = normalizedSkillGaps.filter((gap) => gap.severity === 'low').length
+    const totalSkillGaps = normalizedSkillGaps.length
     const jobMeta = getJobMeta(report.jobDescription)
 
     const handleResumeDownload = async () => {
@@ -269,6 +263,18 @@ const Interview = () => {
             setDownloadNotice(error.message || 'Unable to download resume right now.')
         } finally {
             setIsDownloading(false)
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!interviewId) return
+        const ok = window.confirm('Delete this interview report? This action cannot be undone.')
+        if (!ok) return
+        try {
+            await deleteReport(interviewId)
+            navigate('/')
+        } catch (err) {
+            setDownloadNotice(err.message || 'Unable to delete report right now.')
         }
     }
 
@@ -354,8 +360,8 @@ const Interview = () => {
                                 <strong>{roadmapDays}</strong>
                             </article>
                             <article>
-                                <span>High Risk Gaps</span>
-                                <strong>{highSeverityGaps}</strong>
+                                <span>Skill Gaps</span>
+                                <strong>{totalSkillGaps}</strong>
                             </article>
                         </div>
                         {downloadNotice && <p className='download-notice'>{downloadNotice}</p>}
@@ -437,21 +443,22 @@ const Interview = () => {
                     <div className='skill-gaps'>
                         <p className='skill-gaps__label'>Skill Gaps</p>
                         <div className='gap-summary'>
-                            <span>Total: {normalizedSkillGaps.length}</span>
-                            <span>High: {highSeverityGaps}</span>
-                            <span>Medium: {mediumSeverityGaps}</span>
-                            <span>Low: {lowSeverityGaps}</span>
+                            <span>Total: {totalSkillGaps}</span>
                         </div>
                         <div className='skill-gaps__list'>
                             {normalizedSkillGaps.map((gap, i) => (
-                                <article key={`${gap.severity}-${i}`} className='skill-gap-item'>
-                                    <span className={`skill-gap-item__severity skill-gap-item__severity--${gap.severity}`}>
-                                        {gap.severity}
-                                    </span>
+                                <article key={`${gap.skill}-${i}`} className='skill-gap-item'>
                                     <span className='skill-gap-item__skill'>{gap.skill}</span>
                                 </article>
                             ))}
                         </div>
+                    </div>
+
+                    <div className='sidebar-divider' />
+                    <div style={{ padding: '0 1rem 1rem' }}>
+                        <button type='button' className='button danger-button' onClick={handleDelete} disabled={loading}>
+                            Delete Report
+                        </button>
                     </div>
 
                 </aside>

@@ -147,7 +147,7 @@ It provides:
 Important implementation details:
 
 - Interview generation validates response shape with Zod and normalizes mixed AI output before saving.
-- Skill gaps use `severity` values of `low`, `medium`, or `high`.
+ - Skill gaps are returned as simple skill names without severity classifications.
 - Resume PDF generation renders a compact A4 layout with print-specific styles.
 
 ## Backend API
